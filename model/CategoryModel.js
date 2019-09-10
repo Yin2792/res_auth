@@ -8,7 +8,7 @@ CATEGORY_MODEL.prototype = {
 get_category:_ =>{
   return new Promise((resolve,reject)=>{
     pool.query(SELECT_ALL_CATEGORY,(err,result)=>{
-        if(err) reject(err);
+        if(err) throw err
          else resolve(result);
       });
   })

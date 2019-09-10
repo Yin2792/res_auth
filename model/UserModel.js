@@ -2,8 +2,9 @@ const pool = require('../DbConnection/db');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const localTime = moment().format('YYYY-MM-DD HH:mm:ss');
-const SELECT_ALL_USERS ='SELECT * FROM user_login';
-const status = "ACTIVE";
+const SELECT_ALL_USERS ='SELECT * FROM user';
+const key = 'mynewkey';
+const status = 1;
 let USER_MODEL = () => {};
 USER_MODEL.prototype = {
 // get_users:callback=>{
@@ -11,23 +12,40 @@ USER_MODEL.prototype = {
 //     if(err) throw error;
 //     callback(res)
 // });
-// }
+// },
+    get_users:(decodeID,token)=>{
+    const users_by_decodeId = `SELECT * FROM user WHERE id = ${decodeID}`;
+    return new Promise((resolve,reject)=>{
+       pool.query(users_by_decodeId,(err,result)=>{
+         result.token = token
+         if(err) throw err
+         resolve(result);
+       })
+    })
+   },
    login_user:body=>{
      let logged_in_user = {
          _name:body.name,
-         _pass:body.pass
+         _pass:body.pass,
      }
-     let token = jwt.sign({name:logged_in_user._name,pass:logged_in_user._pass},'mynewkey',{expiresIn:"20s"});
-     const GET_USER_SAME_NAME_AND_PASS = `SELECT * FROM user WHERE name='${logged_in_user._name}' AND password='${logged_in_user._pass}'`;
+     
+   
+      const GET_USER_SAME_NAME_AND_PASS = `SELECT * FROM user WHERE name='${logged_in_user._name}' AND password='${logged_in_user._pass}'`;
       return new Promise((resolve,reject)=>{
-          pool.query(GET_USER_SAME_NAME_AND_PASS,(err,result)=>{
-              if(err) reject();
-            resolve(result);
-          })
-          authToken =()=>{
-            return token
-        }
-      })
+        pool.query(GET_USER_SAME_NAME_AND_PASS,(err,user)=>{
+          //console.log(user[0].id);
+         
+          //jwt properties
+        const options ={expiresIn:'50s',issuer:'restaurant.com:5005/'};
+        const playload ={user_id:user[0].id};
+        //jwt token
+        let token = jwt.sign(playload,`${key}`,options);
+        user.token = token;
+            if(err) reject();
+            resolve(user);
+        })
+        
+    })
 
    },
   
@@ -41,8 +59,9 @@ USER_MODEL.prototype = {
            _confirm_password:body.con_password
            
        }
+       
        //jwt token   
-       const token =jwt.sign({name:user_info._name,pass:user_info._pass},'mynewkey',{expiresIn:"50s"});
+       //const token =jwt.sign({name:user_info._name},'mynewkey',{expiresIn:"50s"});
        
        
           const INSERT_USER_QUERY = `INSERT INTO user (name,age,address,password,confirm_pass,status,date)
@@ -55,9 +74,9 @@ USER_MODEL.prototype = {
              if(err) reject(err);
               resolve(result);
          })
-        authToken =()=>{
-            return token
-        }
+        // authToken =()=>{
+        //     return token
+        // }
      })                          
     
     
