@@ -1,6 +1,7 @@
-const model_user = require('../model/UserModel');
+const pool = require('../DbConnection/db');
 //Formate of Token
 //Authorization:Bearer <access_token>
+const role_controller = require('../controller/RoleController');
 const jwt = require('jsonwebtoken');
 //secretkey
 const key = 'mynewkey';
@@ -18,28 +19,30 @@ const verifyToken=(req,res,next)=>{
         req.token = bearerToken;
         //jwt properties
         const options = {
-            expiresIn:'50s',
+            expiresIn:'2d',
             issuer:'restaurant.com:5005/'
         }
-        try{
         let decoded = jwt.verify(bearerToken,`${key}`,options);
-
-        const get_user_id =model_user.get_users(decoded.user_id,bearerToken);
-         get_user_id.then(user=>{
-             if(!user){
-                throw new Error();
-             }
-             else{
-                 req.user = user
-             }
-         })
-         //next  Middelware
-         next();
-        } catch (err) {
-            // Throw an error just in case anything goes wrong with verification
-            //console.log("crush");
+        try{
+            const users_by_decodeId = `SELECT * FROM user WHERE id = ${decoded.user_id}`;
+            pool.query(users_by_decodeId,(err,result)=>{
+             if(err) throw err
+              else{
+                
+                   req.user = result
+                  
+                  }
+           })
+              req.decoded = decoded;
+              
+                    //next  Middelware
+                    next();
+            } catch (err) {
+                       // Throw an error just in case anything goes wrong with verification
+                       //console.log("crush");
             throw new Error(err);
-          }
+        }
+        
     }
     else{
     //forbidden

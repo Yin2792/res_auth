@@ -18,6 +18,7 @@ USER_CONTROLLER.prototype = {
 //     },
     user_login:(req,res,next)=>{
        const {name,pass} = req.body;
+       console.log(req.body.name);
        const promise = user_model.login_user(req.body);
      
        promise.then(data=>{
@@ -40,7 +41,23 @@ USER_CONTROLLER.prototype = {
 
     user_add:(req,res,next)=>{
          const {name,age,address,password,con_password} = req.body;
-         const promise= user_model.add_user(req.body);
+          if(req.body.password ==' '){
+               res.send({
+                    message:"you have not inserted password yet"
+               })
+          }
+          else if(req.body.con_password ==' '){
+               res.send({
+                    message:"plz enter confirm password "
+               })
+          }
+          else if(req.body.password !== req.body.con_password){
+               res.send({
+                    message:"password not match"
+               })
+          }
+          else{
+               const promise= user_model.add_user(req.body);
          //function call
          //const token = authToken.call()
          //console.log(token);
@@ -48,10 +65,13 @@ USER_CONTROLLER.prototype = {
                 res.send({
                    status:true,
                    result:data,
+                   message:"you have added successfully"
                    //token
                   });
             })
             .catch(err=>console.log(err));
+          }
+         
           
     }
      

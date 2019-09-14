@@ -13,16 +13,7 @@ USER_MODEL.prototype = {
 //     callback(res)
 // });
 // },
-    get_users:(decodeID,token)=>{
-    const users_by_decodeId = `SELECT * FROM user WHERE id = ${decodeID}`;
-    return new Promise((resolve,reject)=>{
-       pool.query(users_by_decodeId,(err,result)=>{
-         result.token = token
-         if(err) throw err
-         resolve(result);
-       })
-    })
-   },
+    
    login_user:body=>{
      let logged_in_user = {
          _name:body.name,
@@ -36,7 +27,7 @@ USER_MODEL.prototype = {
           //console.log(user[0].id);
          
           //jwt properties
-        const options ={expiresIn:'50s',issuer:'restaurant.com:5005/'};
+        const options ={expiresIn:'2d',issuer:'restaurant.com:5005/'};
         const playload ={user_id:user[0].id};
         //jwt token
         let token = jwt.sign(playload,`${key}`,options);
