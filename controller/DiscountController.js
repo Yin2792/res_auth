@@ -3,13 +3,18 @@ const discount_model = require('../model/DiscountModel');
 let DISCOUNT_CONTROLLER = () => {};
 
 DISCOUNT_CONTROLLER.prototype ={
-
+    discount_get:(req,res,next)=>{
+     const promise = discount_model.get_discount();
+     promise.then(data=>{
+            res.send({
+             status:true,
+             message:"Discount Lists",
+             result:data
+         })
+     })
+    },
     
-    
-  
-
-
-    discount_add:(req,res,next)=>{
+     discount_add:(req,res,next)=>{
         //console.log(req.body.user);
         //like these object,have to be typed in postman
             const {promo_name,promo_type,amount,prod_id,start_date,end_date} = req.body;

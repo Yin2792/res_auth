@@ -18,22 +18,27 @@ USER_MODEL.prototype = {
      let logged_in_user = {
          _name:body.name,
          _pass:body.pass,
+         _id:body.user_id
+    
      }
      
    
-      const GET_USER_SAME_NAME_AND_PASS = `SELECT * FROM user WHERE name='${logged_in_user._name}' AND password='${logged_in_user._pass}'`;
+      const GET_USER_SAME_NAME_AND_PASS = `SELECT * FROM user WHERE name='${logged_in_user._name}' AND password='${logged_in_user._pass}' AND id=${logged_in_user._id}`;
       return new Promise((resolve,reject)=>{
         pool.query(GET_USER_SAME_NAME_AND_PASS,(err,user)=>{
-          //console.log(user[0].id);
-         
-          //jwt properties
+          console.log(user[0].id);
+          const roles =`SELECT * FROM role WHERE user_id=${user[0].id}`;
+         pool.query(roles,(err,role)=>{
+           //jwt properties
         const options ={expiresIn:'2d',issuer:'restaurant.com:5005/'};
-        const playload ={user_id:user[0].id};
+        const playload ={user_id:role[0].user_id,role:role[0].role};
         //jwt token
         let token = jwt.sign(playload,`${key}`,options);
         user.token = token;
             if(err) reject();
             resolve(user);
+         })
+          
         })
         
     })

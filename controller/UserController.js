@@ -17,7 +17,7 @@ USER_CONTROLLER.prototype = {
      
 //     },
     user_login:(req,res,next)=>{
-       const {name,pass} = req.body;
+       const {name,pass,user_id} = req.body;
        console.log(req.body.name);
        const promise = user_model.login_user(req.body);
      
@@ -25,14 +25,15 @@ USER_CONTROLLER.prototype = {
             if(data[0] && data.token){
                  res.send({
                       success:true,
-                       messsage:"Authentication successful!",
-                       token:data.token
+                       messsage:"successfully logged in",
+                       token:data.token,
+                       result:data
                  })
              }
             else{
                  res.status(403).send({
                       success:false,
-                      message:"You are forbidden!Incorrect name and password!Try again!",
+                      message:"Incorrect name and password!Try again!",
 
                  })
             }

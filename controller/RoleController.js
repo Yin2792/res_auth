@@ -16,9 +16,7 @@ ROLE_CONTROLLER.prototype = {
         .catch(err=>console.log(err));
          
     }),
-    role_get:(req,res,next)=>{
-      const 
-    }
+    
 
 
 

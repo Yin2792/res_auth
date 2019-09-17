@@ -22,7 +22,7 @@ ROLE_MODEL.prototype = {
         })
        })
    }
-
+   
 
 }
 module.exports = ROLE_MODEL.prototype

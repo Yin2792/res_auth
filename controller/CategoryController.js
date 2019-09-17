@@ -1,5 +1,6 @@
 const category_model = require('../model/CategoryModel');
 const user = require('../model/UserModel');
+const Role = require('../_helpers/role');
 let CATEGORY_CONTROLLER = () => { };
 
 
@@ -7,15 +8,13 @@ CATEGORY_CONTROLLER.prototype = {
 
   category_get:async(req,res,next)=>{
    
-    await jwt.verify(req.token, `${key}`,(err)=>{
-     if(err){
-         res.status(403).send({
-            success:false,
-            message:"Youre forbidden!You haven't logged in yet"
-         })
-              
-       }
-      else{
+    const bearerHeader = req.headers['authorization'];
+    if(typeof bearerHeader !== 'undefined'){
+      res.send({
+        message:"not authorzied yet"
+      })
+    }
+    else{
        var promise = category_model.get_category();
        promise.then(result=>{
          return res.send({
@@ -23,8 +22,8 @@ CATEGORY_CONTROLLER.prototype = {
             data:result
          });
        }).catch(err=>res.send(err));
-       }
- })
+       
+    }
          
          
      },
@@ -44,18 +43,25 @@ CATEGORY_CONTROLLER.prototype = {
 
   },
   category_edit: (req, res, next) => {
-    const id = req.params.id;
+    const id = parseInt(req.params.id)
+    const currentUser = req.user
     const { category_name_1 } = req.body;
-    const promise = category_model.edit_category(parseInt(id), req.body);
-    promise.then(data => {
-      console.log(data);
-      res.send({
-        status: true,
-        message: `You have updated at id = ${id}`,
-        result: data
+    if(currentUser.role!==Role.Admin){
+      res.send({message:"you have no right to access"})
+    }
+    else{
+      const promise = category_model.edit_category(id, req.body);
+      promise.then(data => {
+        console.log(data);
+        res.send({
+          status: true,
+          message: `You have updated at id = ${id}`,
+          result: data
+        })
+          .catch(err => console.log(err));
       })
-        .catch(err => console.log(err));
-    })
+    }
+    
   },
   category_remove: (req, res, next) => {
     const removed_id = req.params.id;
