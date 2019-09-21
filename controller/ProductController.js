@@ -80,6 +80,16 @@ PRODUCT_CONTROLLER.prototype = {
     }
     
    },
+   product_get:(req,res,next)=>{
+    var promise = product_model.get_product();
+    promise.then(result=>{
+      return res.json({
+        message:"product lists by active status",
+        data:result,
+        amount:result.value
+      });
+    }).catch(err=>res.send(err));
+   }
 
   }
 module.exports = PRODUCT_CONTROLLER.prototype

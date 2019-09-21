@@ -9,7 +9,6 @@ const pool = mysql.createPool({
     database:'restaurantdb'
 
 });
-
 pool.getConnection((err,connection)=>{
     if(err)
     console.error("Sth went wrong in connection to database");

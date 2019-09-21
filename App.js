@@ -13,7 +13,7 @@ const discount_route = require('./route/DiscountRoute');
 const product_route = require('./route/ProductRoute');
 const price_route = require('./route/PriceRoute');
 const role_route = require('./route/RoleRoute');
-const order_route = require('./route/OrderRoute');
+const payment_route = require('./route/PaymentRoute');
 const errorHandler = require('./_helpers/error_handler');
 //port number
 const PORT = process.env.PORT || 5005;
@@ -34,7 +34,7 @@ app.use('/',discount_route);
 app.use('/',product_route);
 app.use('/',price_route);
 app.use('/',role_route);
-app.use('/',order_route);
+app.use('/',payment_route);
 //
 //authication error handler
 
